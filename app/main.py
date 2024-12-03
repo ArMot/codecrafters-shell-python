@@ -3,12 +3,18 @@ import sys
 
 def main():
     # Uncomment this block to pass the first stage
+    #
+    command = ""
+    EXIT = "exit"
 
-    while True:
+    while command != "exit":
         sys.stdout.write("$ ")
         # Wait for user input
         request = input()
         command = request.split()[0]
+
+        if command == EXIT:
+            continue
 
         sys.stderr.write(f"{command}: not found\n")
 
