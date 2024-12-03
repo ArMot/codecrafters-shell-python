@@ -1,10 +1,9 @@
 import sys
-from typing import Optional
+
+BUILTINS = ["exit", "echo", "type"]
 
 
 def main():
-    # Uncomment this block to pass the first stage
-    #
     command = ""
     EXIT = "exit"
 
@@ -20,9 +19,14 @@ def main():
             continue
         elif command == "echo":
             echo(args)
+        elif command == "type":
+            if args[0] in BUILTINS:
+                sys.stdout.write(f"{args[0]} is a shell builtin\n")
+            else:
+                not_found(args[0])
 
         else:
-            sys.stderr.write(f"{command}: not found\n")
+            not_found(command)
 
 
 def echo(args: list):
@@ -30,6 +34,10 @@ def echo(args: list):
         return
     args_str = " ".join(str(arg) for arg in args)
     sys.stdout.write(f"{args_str}\n")
+
+
+def not_found(cmd: str):
+    sys.stderr.write(f"{cmd}: not found\n")
 
 
 if __name__ == "__main__":
