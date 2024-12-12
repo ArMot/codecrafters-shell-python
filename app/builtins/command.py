@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 
 from app.helpers import utils
 
@@ -17,6 +18,10 @@ class BuiltinCommands:
         self.validate_args(args, required_args=1)
         message = " ".join(str(arg) for arg in args)
         utils.print_to_stdout(message)
+
+    def pwd(self) -> None:
+        path = Path.cwd()
+        utils.print_to_stdout(path)
 
     def exit(self) -> None:
         sys.exit(0)

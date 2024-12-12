@@ -1,5 +1,6 @@
 import inspect
 import sys
+import os
 
 import subprocess
 
@@ -7,6 +8,8 @@ from app.builtins.command import BuiltinCommands
 from app.helpers import utils
 
 BUILTINS = ["exit", "echo", "type"]
+
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def extract_command_and_params(user_input: str) -> tuple[str, list]:
