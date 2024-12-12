@@ -1,43 +1,38 @@
+import inspect
 import sys
+import os
+from pathlib import Path
+
+from app.builtins.command import BuiltinCommands
+from app.helpers import utils
 
 BUILTINS = ["exit", "echo", "type"]
 
 
+def extract_command_and_params(user_input: str) -> tuple[str, list]:
+    request = user_input.split()
+    command = request[0]
+    args = request[1:] if len(request) > 1 else []
+    return command, args
+
+
 def main():
     command = ""
-    EXIT = "exit"
-
-    while command != "exit":
+    while True:
         sys.stdout.write("$ ")
         # Wait for user input
         request = input()
-        request = request.split()
-        command = request[0]
-        args = request[1:] if len(request) > 1 else []
+        command, args = extract_command_and_params(request)
 
-        if command == EXIT:
-            continue
-        elif command == "echo":
-            echo(args)
-        elif command == "type":
-            if args[0] in BUILTINS:
-                sys.stdout.write(f"{args[0]} is a shell builtin\n")
+        try:
+            obj = BuiltinCommands()
+            cmd = getattr(obj, command)
+            if len(inspect.signature(cmd).parameters) == 0:
+                cmd()
             else:
-                not_found(args[0])
-
-        else:
-            not_found(command)
-
-
-def echo(args: list):
-    if not args:
-        return
-    args_str = " ".join(str(arg) for arg in args)
-    sys.stdout.write(f"{args_str}\n")
-
-
-def not_found(cmd: str):
-    sys.stderr.write(f"{cmd}: not found\n")
+                cmd(args)
+        except AttributeError:
+            utils.check_if_exec_found(command)
 
 
 if __name__ == "__main__":
