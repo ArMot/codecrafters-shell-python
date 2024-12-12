@@ -1,7 +1,7 @@
 import inspect
 import sys
-import os
-from pathlib import Path
+
+import subprocess
 
 from app.builtins.command import BuiltinCommands
 from app.helpers import utils
@@ -24,15 +24,23 @@ def main():
         request = input()
         command, args = extract_command_and_params(request)
 
-        try:
-            obj = BuiltinCommands()
-            cmd = getattr(obj, command)
-            if len(inspect.signature(cmd).parameters) == 0:
-                cmd()
+        obj = BuiltinCommands()
+        if hasattr(obj, command):
+            run_builtin_command(obj, command, args)
+        else:
+            exec_path = utils.get_exec_if_exist(command)
+            if exec_path:
+                subprocess.call([command, *args])
             else:
-                cmd(args)
-        except AttributeError:
-            utils.check_if_exec_found(command)
+                utils.not_found(command)
+
+
+def run_builtin_command(obj: BuiltinCommands, command: str, args: list[str]) -> None:
+    cmd = getattr(obj, command)
+    if len(inspect.signature(cmd).parameters) == 0:
+        cmd()
+    else:
+        cmd(args)
 
 
 if __name__ == "__main__":
