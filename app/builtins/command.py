@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+import os
 
 from app.helpers import utils
 
@@ -22,6 +23,14 @@ class BuiltinCommands:
     def pwd(self) -> None:
         path = Path.cwd()
         utils.print_to_stdout(path)
+
+    def cd(self, args: list[str]) -> None:
+        self.validate_args(args, 1)
+        if args[0].startswith("/"):
+            try:
+                os.chdir(args[0])
+            except FileNotFoundError:
+                utils.print_to_stderr(f"cd: {args[0]}: No such file or directory")
 
     def exit(self) -> None:
         sys.exit(0)
